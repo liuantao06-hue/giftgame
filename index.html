@@ -109,7 +109,7 @@
     <div class="container">
         <h1>刘晓明时代家庭决择</h1>
         <div class="intro-stage stage">
-            <p class="intro">父亲不幸去世，留下了加工厂、大楼、纸箱厂、房产。你作为长兄刘晓明，需要与妹妹分配家产。<br>目标：尽可能让妹妹分到更多家产，成为“好丈夫”！</p >
+            <p class="intro">爷爷与世长辞，留下了加工厂、大楼、纸箱厂、房产。你作为长兄刘晓明，需要与妹妹分配家产。家人的期待，是否清醒的头脑，一切都在一念之间<br>目标：尽可能让自己家得到更多</p >
             <button onclick="startGame()">开始决择</button>
         </div>
 
@@ -212,14 +212,14 @@
             let outcome, className;
             if (count >= 3) {
                 outcome = `
-                    <h2>🎉 结局：好丈夫！</h2>
-                    <p>妹妹分到 ${count}/4 家产（${sisterAssets.join('、')}），她感动不已，你是完美的好丈夫！家庭和睦，幸福一生。</p >
+                   <h2>💔 结局：看不清现状，失败，儿子和家人都很失望</h2>
+                   <p>只分到 ${count}/4 家产，辜负家人期望。</p >
                 `;
                 className = 'good-ending';
             } else {
                 outcome = `
-                    <h2>💔 结局：看不清现状，失败</h2>
-                    <p>妹妹只分到 ${count}/4 家产，你被视为自私鬼，家庭破裂，一生遗憾。</p >
+                    <h2>🎉 结局：好丈夫！</h2>
+                    <p>妹妹分到 ${count}/4 家产（${sisterAssets.join('、')}），成为小丑，家人称你是完美的好丈夫！家庭和睦，幸福一生。</p >
                 `;
                 className = 'bad-ending';
             }

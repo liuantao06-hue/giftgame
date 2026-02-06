@@ -1,1 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>刘晓明时代家庭决择</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #4a5568;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .intro {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .assets {
+            background: #e8f4fd;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 1.1em;
+        }
+        .question {
+            font-size: 1.4em;
+            color: #2d3748;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        button {
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            margin: 10px;
+            cursor: pointer;
+            font-size: 1.1em;
+            border-radius: 50px;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        button.good {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+        }
+        button.bad {
+            background: linear-gradient(45deg, #ff9ff3, #f368e0);
+        }
+        .dialogue {
+            display: none;
+            background: #fff3cd;
+            border: 2px solid #ffeaa7;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            font-size: 1.2em;
+            animation: fadeIn 0.5s;
+        }
+        .stage {
+            display: none;
+        }
+        .intro-stage { display: block; }
+        .ending {
+            display: none;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+        .good-ending {
+            background: linear-gradient(45deg, #a8e6cf, #88d8a3);
+            color: #006400;
+        }
+        .bad-ending {
+            background: linear-gradient(45deg, #ffafbd, #ffc3a0);
+            color: #8b0000;
+        }
+        .restart {
+            background: linear-gradient(45deg, #a55eea, #5f27cd);
+            font-size: 1em;
+            padding: 10px 20px;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>刘晓明时代家庭决择</h1>
+        <div class="intro-stage stage">
+            <p class="intro">父亲不幸去世，留下了加工厂、大楼、纸箱厂、房产。你作为长兄刘晓明，需要与妹妹分配家产。<br>目标：尽可能让妹妹分到更多家产，成为“好丈夫”！</p >
+            <button onclick="startGame()">开始决择</button>
+        </div>
 
+        <div id="assets" class="assets" style="display:none;">
+            <strong>妹妹已分到：</strong> <span id="sister-list">无</span> (<span id="count">0</span>/4)
+        </div>
+
+        <div id="stage1" class="stage">
+            <p class="question">第一个抉择：加工厂该如何分配？</p >
+            <button class="bad" onclick="choose(0, 0)">自己全拿（不给妹妹）</button>
+            <button class="good" onclick="choose(1, 0)">全给妹妹</button>
+            <button onclick="choose(2, 0)">一人一半（分享）</button>
+        </div>
+
+        <div id="stage2" class="stage" style="display:none;">
+            <p class="question">第二个抉择：大楼该如何分配？</p >
+            <button class="bad" onclick="choose(0, 1)">自己全拿（不给妹妹）</button>
+            <button class="good" onclick="choose(1, 1)">全给妹妹</button>
+            <button onclick="choose(2, 1)">一人一半（分享）</button>
+        </div>
+
+        <div id="stage3" class="stage" style="display:none;">
+            <p class="question">第三个抉择：纸箱厂该如何分配？</p >
+            <button class="bad" onclick="choose(0, 2)">自己全拿（不给妹妹）</button>
+            <button class="good" onclick="choose(1, 2)">全给妹妹</button>
+            <button onclick="choose(2, 2)">一人一半（分享）</button>
+        </div>
+
+        <div id="stage4" class="stage" style="display:none;">
+            <p class="question">最后一个抉择：房产该如何分配？</p >
+            <button class="bad" onclick="choose(0, 3)">自己全拿（不给妹妹）</button>
+            <button class="good" onclick="choose(1, 3)">全给妹妹</button>
+            <button onclick="choose(2, 3)">一人一半（分享）</button>
+        </div>
+
+        <div id="dialogue" class="dialogue"></div>
+
+        <div id="ending" class="ending"></div>
+    </div>
+
+    <script>
+        let step = 0;
+        let sisterAssets = [];
+        const assets = ['加工厂', '大楼', '纸箱厂', '房产'];
+        const dialogues = [
+            // 阶段0: 加工厂
+            ["妹妹：哥，你太自私了！以后别叫我妹妹！", "妹妹：哥，你真好！加工厂我收下了，爱你！", "妹妹：哥，一人一半？这样工厂就毁了，我们都没了……"],
+            // 阶段1: 大楼
+            ["妹妹：大楼你全要？我们姐妹情分没了！", "妹妹：谢谢哥！大楼归我，我会好好管理的！", "妹妹：一半？大楼这样分，会贬值的……"],
+            // 阶段2: 纸箱厂
+            ["妹妹：纸箱厂不给我？你眼里没我！", "妹妹：哥最好了！纸箱厂我拿了！", "妹妹：分享？厂子乱套了，大家都没利……"],
+            // 阶段3: 房产
+            ["妹妹：房产你独吞？爸在天上不会同意！", "妹妹：房产给我，哥你是最棒的丈夫！", "妹妹：一半房产？手续麻烦，价值全没了……"]
+        ];
+
+        function startGame() {
+            document.querySelector('.intro-stage').style.display = 'none';
+            document.getElementById('assets').style.display = 'block';
+            document.getElementById('stage1').style.display = 'block';
+            updateAssets();
+        }
+
+        function choose(choice, currentStep) {
+            // 隐藏当前阶段
+            document.getElementById(`stage${currentStep + 1}`).style.display = 'none';
+            // 显示对话
+            document.getElementById('dialogue').innerHTML = `<p>${dialogues[currentStep][choice]}</p >`;
+            document.getElementById('dialogue').style.display = 'block';
+            
+            // 如果选择全给妹妹，添加资产
+            if (choice === 1) {
+                sisterAssets.push(assets[currentStep]);
+            }
+            // choice 0或2：不加（坏或毁）
+            
+            step++;
+            updateAssets();
+            
+            setTimeout(() => {
+                document.getElementById('dialogue').style.display = 'none';
+                if (step < 4) {
+                    document.getElementById(`stage${step + 1}`).style.display = 'block';
+                } else {
+                    showEnding();
+                }
+            }, 2000);
+        }
+
+        function updateAssets() {
+            const list = sisterAssets.join('、') || '无';
+            document.getElementById('sister-list').textContent = list;
+            document.getElementById('count').textContent = sisterAssets.length;
+        }
+
+        function showEnding() {
+            const count = sisterAssets.length;
+            const ending = document.getElementById('ending');
+            ending.style.display = 'block';
+            
+            let outcome, className;
+            if (count >= 3) {
+                outcome = `
+                    <h2>🎉 结局：好丈夫！</h2>
+                    <p>妹妹分到 ${count}/4 家产（${sisterAssets.join('、')}），她感动不已，你是完美的好丈夫！家庭和睦，幸福一生。</p >
+                `;
+                className = 'good-ending';
+            } else {
+                outcome = `
+                    <h2>💔 结局：看不清现状，失败</h2>
+                    <p>妹妹只分到 ${count}/4 家产，你被视为自私鬼，家庭破裂，一生遗憾。</p >
+                `;
+                className = 'bad-ending';
+            }
+            ending.innerHTML = outcome;
+            ending.className = `ending ${className}`;
+            ending.innerHTML += '<br><button class="restart" onclick="restartGame()">重新决择</button>';
+        }
+
+        function restartGame() {
+            step = 0;
+            sisterAssets = [];
+            document.getElementById('assets').style.display = 'none';
+            document.getElementById('ending').style.display = 'none';
+            document.getElementById('dialogue').style.display = 'none';
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`stage${i}`).style.display = 'none';
+            }
+            document.querySelector('.intro-stage').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
